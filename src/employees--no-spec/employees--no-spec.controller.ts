@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { EmployeesNoSpecService } from './employees--no-spec.service';
 import { CreateEmployeesNoSpecDto } from './dto/create-employees--no-spec.dto';
 import { UpdateEmployeesNoSpecDto } from './dto/update-employees--no-spec.dto';
@@ -17,24 +17,24 @@ export class EmployeesNoSpecController {
     return this.employeesNoSpecService.findAll();
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(
-    @Param('id')
+    @Param('id', new ParseUUIDPipe({version: '4'}))
     id: string
   ) {
-    return this.employeesNoSpecService.findOne(+id);
+    return this.employeesNoSpecService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEmployeesNoSpecDto: UpdateEmployeesNoSpecDto) {
-    return this.employeesNoSpecService.update(+id, updateEmployeesNoSpecDto);
+  update(@Param('id', new ParseUUIDPipe({version: '4'})) id: string, @Body() updateEmployeesNoSpecDto: UpdateEmployeesNoSpecDto) {
+    return this.employeesNoSpecService.update(id, updateEmployeesNoSpecDto);
   }
 
   @Delete(':id')
   remove(
-    @Param('id') 
+    @Param('id', new ParseUUIDPipe({version: '4'})) 
     id: string
   ) {
-    return this.employeesNoSpecService.remove(+id);
+    return this.employeesNoSpecService.remove(id);
   }
 }

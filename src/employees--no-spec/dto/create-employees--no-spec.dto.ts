@@ -1,5 +1,5 @@
 export class CreateEmployeesNoSpecDto {
-    id: number;
+    id: string;
     name: string;
     latName: string;
     phoneNUmber:string;

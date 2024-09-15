@@ -1,24 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEmployeesNoSpecDto } from './dto/create-employees--no-spec.dto';
 import { UpdateEmployeesNoSpecDto } from './dto/update-employees--no-spec.dto';
+import { v4 as uuid} from "uuid";
 
 @Injectable()
 export class EmployeesNoSpecService {
   private employees: CreateEmployeesNoSpecDto[]=[
   {
-    id:1,
+    id:uuid(),
     name: "Alberto",
     latName:"Costas",
     phoneNUmber:"5342526271"
   },
   {
-    id:2,
+    id:uuid(),
     name: "Jose",
     latName:"Perez",
     phoneNUmber:"5342526445"
   }]
   create(createEmployeesNoSpecDto: CreateEmployeesNoSpecDto) {
-    createEmployeesNoSpecDto.id=this.employees.length+1
+    createEmployeesNoSpecDto.id=uuid();
     this.employees.push(createEmployeesNoSpecDto);
     return createEmployeesNoSpecDto
   }
@@ -28,12 +29,13 @@ export class EmployeesNoSpecService {
     return this.employees;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     const employee=this.employees.filter((employee)=>employee.id==id)[0];
+    if (!employee) throw new NotFoundException();
     return employee;
   }
 
-  update(id: number, updateEmployeesNoSpecDto: UpdateEmployeesNoSpecDto) {
+  update(id: string, updateEmployeesNoSpecDto: UpdateEmployeesNoSpecDto) {
     let employeeToUpdate = this.findOne(id);
      employeeToUpdate = {
       ...employeeToUpdate,
@@ -49,7 +51,8 @@ export class EmployeesNoSpecService {
      return employeeToUpdate;
   }
 
-  remove(id: number) {
+  remove(id: string) {
+    this.findOne(id)
     this.employees= this.employees.filter((employee)=>employee.id!=id);
     return this.employees;
   }

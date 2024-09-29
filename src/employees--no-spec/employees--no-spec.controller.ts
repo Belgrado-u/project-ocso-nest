@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe,UseInterceptors,UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { EmployeesNoSpecService } from './employees--no-spec.service';
 import { CreateEmployeesNoSpecDto } from './dto/create-employees--no-spec.dto';
 import { UpdateEmployeesNoSpecDto } from './dto/update-employees--no-spec.dto';
@@ -10,6 +11,12 @@ export class EmployeesNoSpecController {
   @Post()
   create(@Body() createEmployeesNoSpecDto: CreateEmployeesNoSpecDto) {
     return this.employeesNoSpecService.create(createEmployeesNoSpecDto);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadPhoto(@UploadedFile() file: Express.Multer.File){
+    return "Ok"
   }
 
   @Get()

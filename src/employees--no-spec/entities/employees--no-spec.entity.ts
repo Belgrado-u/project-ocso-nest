@@ -9,7 +9,12 @@ export class EmployeesNoSpec {
     @Column('text')
     lastName: string;
     @Column('text')
-    phoneNUmber:string;
+    phoneNumber:string;
     @Column('text')
     email:string;
+    @Column({
+        type:'text',
+        nullable:true
+    })
+    photoUrl: string;
 }

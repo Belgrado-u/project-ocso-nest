@@ -9,7 +9,7 @@ export class CreateEmployeesNoSpecDto {
     lastName: string;
     @IsString()
     @MaxLength(10)
-    phoneNUmber:string;
+    phoneNumber:string;
     @IsString()
     @IsEmail()
     email: string;

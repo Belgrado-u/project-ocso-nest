@@ -31,7 +31,12 @@ export class ProductsService {
   }
 
   findByProvider(id: string) {
-    return "OK"
+    return this.productRepository.findBy({
+      provider:{
+        providerId:id,
+
+      }
+    })
     /*const productsFound=this.products.filter((product)=>product.provider==id);
     if(productsFound.length==0) throw new NotFoundException()
       return productsFound; */

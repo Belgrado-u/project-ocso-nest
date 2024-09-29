@@ -6,7 +6,7 @@ export class CreateEmployeesNoSpecDto {
     name: string;
     @IsString()
     @MaxLength(70)
-    latName: string;
+    lastName: string;
     @IsString()
     @MaxLength(10)
     phoneNUmber:string;

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateEmployeesNoSpecDto } from './dto/create-employees--no-spec.dto';
 import { UpdateEmployeesNoSpecDto } from './dto/update-employees--no-spec.dto';
 import { v4 as uuid} from "uuid";
@@ -12,9 +12,16 @@ export class EmployeesNoSpecService {
     @InjectRepository(EmployeesNoSpec)
     private employeeRepository:Repository<EmployeesNoSpec>
   ){}
-  async create(createEmployeesNoSpecDto: CreateEmployeesNoSpecDto) {
-    const employee=await this.employeeRepository.save(createEmployeesNoSpecDto)
+  async create(createEmployeesNoSpecDto : CreateEmployeesNoSpecDto) {
+    try {
+      const employee=await this.employeeRepository.save(createEmployeesNoSpecDto)
     return employee;
+    } catch (error) 
+    {
+     console.log(error)
+     throw new InternalServerErrorException("error en  la BD")
+    }
+    
   }
 
   findAll() {

@@ -7,7 +7,7 @@ export class EmployeesNoSpec {
     @Column('text')
     name: string;
     @Column('text')
-    latName: string;
+    lastName: string;
     @Column('text')
     phoneNUmber:string;
     @Column('text')

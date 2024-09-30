@@ -16,4 +16,6 @@ export class Region {
 
     @OneToMany(()=>Location,(location)=>location.region)
     locations:Location[];
+
+    
 }

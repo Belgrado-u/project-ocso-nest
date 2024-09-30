@@ -39,4 +39,5 @@ export class ManagersService {
     return this.managerRepository.delete({
       managerId:id 
     })
+  }
 }

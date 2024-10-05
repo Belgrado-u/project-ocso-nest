@@ -13,8 +13,7 @@ import { EXPIRES_IN,JWT_KEY } from './constants/jwt.constants';
       secret: JWT_KEY,
       signOptions: {
         expiresIn: EXPIRES_IN,
-      },
-      global: true,
+      }
     })
   ],
   controllers: [AuthController],

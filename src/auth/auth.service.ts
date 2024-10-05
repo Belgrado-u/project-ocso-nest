@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
-import { LoginUserDto } from "./dto/login-user-dto"; 
+import { LoginUserDto } from "./dto/login-user.dto"; 
 
 @Injectable()
 export class AuthService {
@@ -27,7 +27,7 @@ export class AuthService {
     const match = await bcrypt.compare(
       loginUserDto.userPassword,
       user.userPassword,
-    );
+    )
     if (!match) throw new UnauthorizedException("No estas autorizado");
     const payload = {
       user: user.userEmail,

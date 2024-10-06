@@ -17,7 +17,6 @@ export class AuthService {
     createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 5);
     return this.userRepository.save(createUserDto);
   }
-
   async loginUser(loginUserDto: LoginUserDto) {
     const user = await this.userRepository.findOne({
       where: {
@@ -26,12 +25,13 @@ export class AuthService {
     });
     const match = await bcrypt.compare(
       loginUserDto.userPassword,
-      user.userPassword,
-    )
+      user.userPassword
+    );
     if (!match) throw new UnauthorizedException("No estas autorizado");
     const payload = {
-      user: user.userEmail,
-      password: user.userPassword,
+      userEmail: user.userEmail,
+      userPassword: user.userPassword,
+      userRoles:user.userRoles
     };
     const token = this.jwtService.sign(payload);
     return token;

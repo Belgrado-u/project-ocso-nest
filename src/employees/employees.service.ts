@@ -1,20 +1,20 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateEmployeesNoSpecDto } from './dto/create-employees--no-spec.dto';
-import { UpdateEmployeesNoSpecDto } from './dto/update-employees--no-spec.dto';
+import { CreateEmployeeDto } from './dto/create-employee.dto';
+import { UpdateEmployeeDto } from './dto/update-employee.dto'; 
 import { v4 as uuid} from "uuid";
 import { InjectRepository } from '@nestjs/typeorm';
-import { EmployeesNoSpec } from './entities/employees--no-spec.entity';
+import { Employee } from './entities/employee.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class EmployeesNoSpecService {
+export class EmployeesService {
   constructor(
-    @InjectRepository(EmployeesNoSpec)
-    private employeeRepository:Repository<EmployeesNoSpec>
+    @InjectRepository(Employee)
+    private employeeRepository:Repository<Employee>
   ){}
-  async create(createEmployeesNoSpecDto : CreateEmployeesNoSpecDto) {
+  async create(createEmployeeDto : CreateEmployeeDto) {
     try {
-      const employee=await this.employeeRepository.save(createEmployeesNoSpecDto)
+      const employee=await this.employeeRepository.save(createEmployeeDto)
     return employee;
     } catch (error) 
     {
@@ -29,6 +29,14 @@ export class EmployeesNoSpecService {
     return this.employeeRepository.find();
   }
 
+  findByLocation(id:number){
+    return this.employeeRepository.findBy({
+      location: {
+        locationId:id
+      }
+    })
+  }
+
   findOne(id: string) {
     const employee=this.employeeRepository.findOneBy({
       employeeId:id
@@ -37,10 +45,10 @@ export class EmployeesNoSpecService {
     return employee;
   }
 
-  async update(id: string, updateEmployeesNoSpecDto: UpdateEmployeesNoSpecDto) {
+  async update(id: string, updateEmployeeDto: UpdateEmployeeDto) {
     const employeeToUpdate = await this.employeeRepository.preload({
       employeeId:id,
-      ...updateEmployeesNoSpecDto
+      ...updateEmployeeDto
     })
     this.employeeRepository.save(employeeToUpdate)
     return employeeToUpdate;

@@ -3,7 +3,7 @@ import { Location } from "src/locations/entities/location.entity";
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class EmployeesNoSpec {
+export class Employee {
     @PrimaryGeneratedColumn('uuid')
     employeeId: string;
     @Column('text')

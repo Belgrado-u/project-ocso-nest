@@ -8,6 +8,7 @@ import { Response } from 'express';
 import { TOKEN_NAME } from './constants/jwt.constants';
 import { Cookies } from './decorators/cookies.decorator';
 
+
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {

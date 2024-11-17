@@ -9,27 +9,31 @@ export class CreateEmployeeDto extends Employee {
     @IsString()
     @MaxLength(30)
     employeeName: string;
-
+  
     @ApiProperty()
     @IsString()
     @MaxLength(70)
     employeeLastName: string;
-
+  
     @ApiProperty()
     @IsString()
     @MaxLength(10)
-    employeePhoneNumber:string;
-
+    employeePhoneNumber: string;
+  
     @ApiProperty()
     @IsString()
     @IsEmail()
     employeeEmail: string;
-    
+  
     @ApiPropertyOptional()
     @IsOptional()
-    @IsObject()
-    location: Location  ;
-}
+    @IsString()
+    location: Location | string;
+  
+    @ApiPropertyOptional()
+    @IsOptional()
+    emplyeePhoto: string;
+  }
 
 
 

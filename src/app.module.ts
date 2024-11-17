@@ -8,10 +8,10 @@ import { ManagersModule } from './managers/managers.module';
 import { LocationsModule } from './locations/locations.module';
 import { RegionsModule } from './regions/regions.module';
 import { AuthModule } from './auth/auth.module';
-
+import { AwsModule } from './aws/aws.module';
 
 @Module({
-    imports: [
+  imports: [
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: "postgres",
@@ -21,11 +21,17 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.pass,
       database: process.env.name,
       entities: [],
-      autoLoadEntities:true,
-      synchronize: true, 
-  }),
-  EmployeesModule, 
-  ProductsModule, ProvidersModule, ManagersModule, LocationsModule, RegionsModule, AuthModule
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    EmployeesModule,
+    ProductsModule,
+    ProvidersModule,
+    ManagersModule,
+    LocationsModule,
+    RegionsModule,
+    AuthModule,
+    AwsModule,
   ],
   controllers: [],
   providers: [],

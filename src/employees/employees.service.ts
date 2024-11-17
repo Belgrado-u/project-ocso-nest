@@ -10,44 +10,46 @@ import { Repository } from 'typeorm';
 export class EmployeesService {
   constructor(
     @InjectRepository(Employee)
-    private employeeRepository:Repository<Employee>
+    private employeeRepository: Repository<Employee>
   ){}
-  async create(createEmployeeDto : CreateEmployeeDto) {
-    try {
-      const employee=await this.employeeRepository.save(createEmployeeDto)
+  async create(createEmployeeDto: CreateEmployeeDto) {
+    const employee = await this.employeeRepository.save(createEmployeeDto)
     return employee;
-    } catch (error) 
-    {
-     console.log(error)
-     throw new InternalServerErrorException("error en  la BD")
-    }
-    
   }
 
   findAll() {
-    //Return all employees
-    return this.employeeRepository.find();
+    return this.employeeRepository.find({
+      relations: {
+        location: true,
+        user: true,
+      }
+    });
   }
 
-  findByLocation(id:number){
+  findByLocation(id: number) {
     return this.employeeRepository.findBy({
       location: {
-        locationId:id
+        locationId: id
       }
     })
   }
 
   findOne(id: string) {
-    const employee=this.employeeRepository.findOneBy({
-      employeeId:id
-    });
-    if (!employee) throw new NotFoundException();
+    const employee = this.employeeRepository.findOne({
+      where : {
+        employeeId: id
+      },
+      relations: {
+        location: true,
+        user: true,
+      }
+    })
     return employee;
   }
 
   async update(id: string, updateEmployeeDto: UpdateEmployeeDto) {
     const employeeToUpdate = await this.employeeRepository.preload({
-      employeeId:id,
+      employeeId: id,
       ...updateEmployeeDto
     })
     this.employeeRepository.save(employeeToUpdate)
@@ -56,10 +58,10 @@ export class EmployeesService {
 
   remove(id: string) {
     this.employeeRepository.delete({
-      employeeId:id
+      employeeId: id
     })
-    return{
-      message:"Employee Deleted "
+    return {
+      message: "Employee deleted"
     }
   }
 }

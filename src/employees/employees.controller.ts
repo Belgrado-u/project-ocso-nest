@@ -65,7 +65,7 @@ export class EmployeesController {
   ) {
     const response = await this.awsService.uploadFile(file);
     return this.employeesService.update(id, {
-      employeePhoto: response,
+      emplyeePhoto: response,
     });
   }
 

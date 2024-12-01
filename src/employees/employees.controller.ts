@@ -24,13 +24,15 @@ import { AwsService } from "src/aws/aws.service";
 @ApiAuth()
 @ApiTags("Employees")
 @Controller("employees")
+@Auth(ROLES.MANAGER, ROLES.ADMIN)
 export class EmployeesController {
   constructor(
     private readonly employeesService: EmployeesService,
     private readonly awsService: AwsService,
   ) {}
 
-  @Auth(ROLES.MANAGER)
+  @Post()
+  @UseInterceptors(FileInterceptor("employeePhoto"))
   @ApiResponse({
     status: 201,
     example: {
@@ -41,79 +43,39 @@ export class EmployeesController {
       employeePhoneNumber: "442138841",
     } as Employee,
   })
-  @Post()
-  @UseInterceptors(FileInterceptor("employeePhoto"))
   async create(
     @Body() createEmployeeDto: CreateEmployeeDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
       return this.employeesService.create(createEmployeeDto);
-    } else {
-      const photoUrl = await this.awsService.uploadFile(file);
-      createEmployeeDto.employeePhoto = photoUrl;
-      return this.employeesService.create(createEmployeeDto);
     }
+    const fileUrl = await this.awsService.uploadFile(file);
+    createEmployeeDto.employeePhoto = fileUrl;
+    return this.employeesService.create(createEmployeeDto);
   }
 
-  @Auth(ROLES.MANAGER, ROLES.EMPLOYEE)
-  @Post(":id/upload")
-  @UseInterceptors(FileInterceptor("file"))
-  async uploadPhoto(
-    @Param("id") id: string,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    const response = await this.awsService.uploadFile(file);
-    return this.employeesService.update(id, {
-      emplyeePhoto: response,
-    });
-  }
-
-  @Auth(ROLES.MANAGER)
   @Get()
   findAll() {
     return this.employeesService.findAll();
   }
 
-  @Auth(ROLES.MANAGER)
-  @Get("/:id")
-  findOne(
-    @Param("id", new ParseUUIDPipe({ version: "4" }))
-    id: string,
-  ) {
+  @Get(":id")
+  findOne(@Param("id", ParseUUIDPipe) id: string) {
     return this.employeesService.findOne(id);
   }
 
-  @Auth(ROLES.MANAGER)
-  @Get("/location/:id")
-  findAllLocation(@Param("id") id: string) {
-    return this.employeesService.findByLocation(+id);
-  }
-
-  @Auth(ROLES.EMPLOYEE)
-  @UseInterceptors(FileInterceptor("employeePhoto"))
-  @Patch("/:id")
-  async update(
-    @Param("id", new ParseUUIDPipe({ version: "4" })) id: string,
+  @Patch(":id")
+  update(
+    @Param("id", ParseUUIDPipe) id: string,
     @Body() updateEmployeeDto: UpdateEmployeeDto,
-    @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file.originalname == "undefined") {
-      return this.employeesService.update(id, updateEmployeeDto);
-    } else {
-      const fileUrl = await this.awsService.uploadFile(file);
-      updateEmployeeDto.employeePhoto = fileUrl;
-      return this.employeesService.update(id, updateEmployeeDto);
-    }
-
+    return this.employeesService.update(id, updateEmployeeDto);
   }
 
-  @Auth(ROLES.MANAGER)
-  @Delete("/:id")
-  remove(
-    @Param("id", new ParseUUIDPipe({ version: "4" }))
-    id: string,
-  ) {
+  @Delete(":id")
+  @Auth(ROLES.ADMIN)
+  remove(@Param("id", ParseUUIDPipe) id: string) {
     return this.employeesService.remove(id);
   }
 }

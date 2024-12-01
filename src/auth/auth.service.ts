@@ -9,6 +9,7 @@ import { LoginUserDto } from "./dto/login-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Employee } from "src/employees/entities/employee.entity";
 import { Manager } from "src/managers/entities/manager.entity";
+import { ROLES } from "./constants/role.constants";
 
 @Injectable()
 export class AuthService {
@@ -20,31 +21,31 @@ export class AuthService {
   ) {}
 
   async registerEmployee(id: string, createUserDto: CreateUserDto) {
-    const roles = createUserDto.userRoles
-    if (roles.includes("Admin") || roles.includes("Manager")) {
-      throw new BadRequestException("Invalid")
+    const roles = createUserDto.userRoles;
+    if (roles.includes(ROLES.ADMIN) || roles.includes(ROLES.MANAGER)) {
+      throw new BadRequestException("Un empleado no puede tener roles de Admin o Manager");
     }
-    createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 5);
+    createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 10);
     const user = await this.userRepository.save(createUserDto);
     const employee = await this.employeeRepository.preload({
       employeeId: id,
-    })
+    });
     employee.user = user;
-    return this.employeeRepository.save(employee)
+    return this.employeeRepository.save(employee);
   }
 
   async registerManager(id: string, createUserDto: CreateUserDto) {
-    const roles = createUserDto.userRoles
-    if (roles.includes("Admin") || roles.includes("Employee")) {
-      throw new BadRequestException("Invalid")
+    const roles = createUserDto.userRoles;
+    if (roles.includes(ROLES.ADMIN) || roles.includes(ROLES.EMPLOYEE)) {
+      throw new BadRequestException("Un manager no puede tener roles de Admin o Employee");
     }
-    createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 5);
+    createUserDto.userPassword = bcrypt.hashSync(createUserDto.userPassword, 10);
     const user = await this.userRepository.save(createUserDto);
     const manager = await this.managerRepository.preload({
       managerId: id,
-    })
+    });
     manager.user = user;
-    return this.managerRepository.save(manager)
+    return this.managerRepository.save(manager);
   }
 
   async loginUser(loginUserDto: LoginUserDto) {
@@ -53,28 +54,43 @@ export class AuthService {
         userEmail: loginUserDto.userEmail,
       },
     });
-    if (!user) throw new UnauthorizedException("No estas autorizado")
-    const match = await bcrypt.compare(
+    
+    if (!user) {
+      throw new UnauthorizedException("Credenciales incorrectas");
+    }
+
+    const isPasswordValid = await bcrypt.compare(
       loginUserDto.userPassword,
       user.userPassword,
     );
-    if (!match) throw new UnauthorizedException("No estas autorizado");
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException("Credenciales incorrectas");
+    }
+
     const payload = {
       userEmail: user.userEmail,
-      userPassword: user.userPassword,
-      userRoles: user.userRoles
+      userRoles: user.userRoles,
+      sub: user.userId
     };
-    const token = this.jwtService.sign(payload);
-    return token;
+
+    return this.jwtService.sign(payload);
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto){
-    updateUserDto.userPassword = bcrypt.hashSync(updateUserDto.userPassword, 5);
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    if (updateUserDto.userPassword) {
+      updateUserDto.userPassword = bcrypt.hashSync(updateUserDto.userPassword, 10);
+    }
+    
     const newUserData = await this.userRepository.preload({
       userId: id,
       ...updateUserDto
-    })
-    this.userRepository.save(newUserData)
-    return newUserData
+    });
+
+    if (!newUserData) {
+      throw new BadRequestException("Usuario no encontrado");
+    }
+
+    return this.userRepository.save(newUserData);
   }
 }
